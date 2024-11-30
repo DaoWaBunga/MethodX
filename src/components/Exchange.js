@@ -82,6 +82,38 @@ const TradeGrid = styled.div`
   margin-bottom: 40px;
 `;
 
+const LockOverlay = styled.div`
+  position: fixed;
+  top: 80px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  cursor: not-allowed;
+  pointer-events: all;
+`;
+
+const LockMessage = styled.div`
+  font-size: 48px;
+  font-weight: bold;
+  color: ${props => props.theme.accentColor};
+  text-align: center;
+  text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  animation: pulse 2s infinite;
+  margin-top: -80px;
+
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+`;
+
 function Exchange({ account, contracts, provider }) {
   const [balances, setBalances] = useState({ eth: 0, meth: 0, brett: 0, usdc: 0 });
   const [prices, setPrices] = useState({ eth: 0, meth: 0, brett: 0 });
@@ -114,23 +146,32 @@ function Exchange({ account, contracts, provider }) {
 
     try {
       const ethPrice = await contracts.meth.getETHPrice();
-      const methPrice = await contracts.meth.getMETHPrice();
-      const brettPrice = await contracts.meth.getBRETTPrice();
-
       console.log('Raw ETH Price:', ethPrice.toString());
+
+      const methPrice = await contracts.meth.getMETHPrice();
       console.log('Raw METH Price:', methPrice.toString());
 
+      const brettPrice = await contracts.meth.getBRETTPrice();
+      console.log('Raw BRETT Price:', brettPrice.toString());
+
       setPrices({
-        eth: ethers.utils.formatUnits(ethPrice, 8),
-        meth: ethers.utils.formatUnits(methPrice, 8),
-        brett: ethers.utils.formatUnits(brettPrice, 8)
+        eth: Number(ethers.utils.formatUnits(ethPrice, 8)).toFixed(2),
+        meth: Number(ethers.utils.formatUnits(methPrice, 8)).toFixed(2),
+        brett: Number(ethers.utils.formatUnits(brettPrice, 8)).toFixed(2)
+      });
+
+      console.log('Formatted Prices:', {
+        eth: Number(ethers.utils.formatUnits(ethPrice, 8)).toFixed(2),
+        meth: Number(ethers.utils.formatUnits(methPrice, 8)).toFixed(2),
+        brett: Number(ethers.utils.formatUnits(brettPrice, 8)).toFixed(2)
       });
     } catch (error) {
       console.error('Error updating prices:', error);
       console.error('Error details:', {
         message: error.message,
         code: error.code,
-        data: error.data
+        data: error.data,
+        stack: error.stack
       });
     }
   }, [contracts.meth]);
@@ -228,6 +269,11 @@ function Exchange({ account, contracts, provider }) {
           </TradeSection>
         </ContentWrapper>
       </MainContent>
+      <LockOverlay>
+        <LockMessage>
+          Unlocks After Genesis
+        </LockMessage>
+      </LockOverlay>
     </ExchangeContainer>
   );
 }

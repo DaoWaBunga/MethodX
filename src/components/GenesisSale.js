@@ -1,23 +1,66 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { ethers } from 'ethers';
+import spaceBackground from '../assets/space-bg.jpg';
 
 const SaleContainer = styled.div`
   min-height: 100vh;
   padding: 30px;
   background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
-    ${props => props.theme.background};
+    url(${spaceBackground});
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
   color: ${props => props.theme.text};
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.8) 100%);
+    pointer-events: none;
+  }
 `;
 
 const SaleCard = styled.div`
   max-width: 600px;
-  margin: 50px auto;
+  margin: 50px auto 30px;
   padding: 30px;
-  background: ${props => props.theme.boxBg}ee;
+  background: ${props => props.theme.boxBg}cc;
   border-radius: 12px;
   border: 1px solid ${props => props.theme.borderColor};
   backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+  position: relative;
+  z-index: 1;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, 
+      ${props => props.theme.accentColor}33, 
+      transparent, 
+      ${props => props.theme.accentColor}33
+    );
+    border-radius: 13px;
+    z-index: -1;
+    animation: borderGlow 3s linear infinite;
+  }
+
+  @keyframes borderGlow {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.5; }
+  }
 `;
 
 const Title = styled.h1`
@@ -120,6 +163,47 @@ const AdminSection = styled.div`
 const AdminTitle = styled.h2`
   color: ${props => props.theme.accentColor};
   margin-bottom: 20px;
+`;
+
+const DescriptionCard = styled.div`
+  max-width: 800px;
+  margin: 0 auto 50px;
+  padding: 30px;
+  background: ${props => props.theme.boxBg}99;
+  border-radius: 12px;
+  border: 1px solid ${props => props.theme.borderColor};
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+  color: ${props => props.theme.text};
+  
+  h3 {
+    color: ${props => props.theme.accentColor};
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+  }
+
+  p {
+    margin-bottom: 15px;
+    line-height: 1.6;
+  }
+
+  ul {
+    list-style-type: none;
+    padding: 0;
+    
+    li {
+      margin: 10px 0;
+      padding-left: 20px;
+      position: relative;
+      
+      &:before {
+        content: "•";
+        color: ${props => props.theme.accentColor};
+        position: absolute;
+        left: 0;
+      }
+    }
+  }
 `;
 
 function GenesisSale({ account, saleContract }) {
@@ -282,6 +366,35 @@ function GenesisSale({ account, saleContract }) {
           </AdminSection>
         )}
       </SaleCard>
+      
+      <DescriptionCard>
+        <h3>How Genesis Sale Works</h3>
+        <p>
+          The METH Genesis Sale is your exclusive opportunity to become one of the founding members
+          of the METH ecosystem. Here's what you need to know:
+        </p>
+        <ul>
+          <li>
+            <strong>Limited Supply:</strong> Only 21,900,000 METH tokens are available during the Genesis Sale
+          </li>
+          <li>
+            <strong>Fixed Price:</strong> Each METH token is priced at a fixed rate of 0.10 USD
+          </li>
+          <li>
+            <strong>Early Access:</strong> Genesis holders get exclusive early access to the BRETT rewards
+          </li>
+          <li>
+            <strong>No Minimum:</strong> Purchase any amount of METH tokens you want (subject to gas fees)
+          </li>
+          <li>
+            <strong>Instant Distribution:</strong> Tokens are transferred to your wallet immediately after purchase
+          </li>
+        </ul>
+        <p>
+          After the Genesis Sale concludes, METH will be available for trading on our platform at market-determined prices.
+          Genesis holders will have a significant advantage as early adopters in the ecosystem.
+        </p>
+      </DescriptionCard>
     </SaleContainer>
   );
 }
